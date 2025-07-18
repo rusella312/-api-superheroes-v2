@@ -11,7 +11,6 @@ async function getHeroes() {
         ))
     } catch (error) {
         console.error(error)
-        return []
     }
 }
 

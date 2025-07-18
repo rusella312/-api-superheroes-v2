@@ -48,25 +48,9 @@ async function deleteHero(id) {
     return { message: 'Héroe eliminado' };
 }
 
-async function findHeroesByCity(city) {
-    const heroes = await heroRepository.getHeroes();
-    return heroes.filter(hero => hero.city.toLowerCase() === city.toLowerCase());
-}
-
-async function faceVillain(heroId, villain) {
-    const heroes = await heroRepository.getHeroes();
-    const hero = heroes.find(hero => hero.id === parseInt(heroId));
-    if (!hero) {
-        throw new Error('Héroe no encontrado');
-    }
-    return `${hero.alias} enfrenta a ${villain}`;
-}
-
 export default {
     getAllHeroes,
     addHero,
     updateHero,
-    deleteHero,
-    findHeroesByCity,
-    faceVillain
+    deleteHero
 }

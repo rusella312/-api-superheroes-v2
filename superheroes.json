@@ -1,1 +1,22 @@
-[{"id":1,"name":"Bruce Wayne","alias":"Batman","city":"Gotham City","team":"Justice League"},{"id":2,"name":"Clark Kent","alias":"Superman","city":"Metropolis","team":"Justice League"},{"id":3,"name":"Peter Parker","alias":"Spider-Man","city":"New York","team":"Avengers"},{"id":4,"name":"Tony Stark","alias":"Iron Man","city":"New York","team":"Avengers"},{"id":5,"name":"Diana Prince","alias":"Wonder Woman","city":"Themyscira","team":"Justice League"},{"id":6,"name":"Roberto Gómez Bolaños","alias":"superman","city":"CDMX","team":"Liga de la justicia"}]
+[
+  {"id":1,"name":"Roberto Gómez Bolaños","alias":"Chapulin Colorado","city":"CDMX","team":"Independiente"},
+  {"id":2,"name":"Bruce Wayne","alias":"Batman","city":"Gotham City","team":"Justice League"},
+  {"id":3,"name":"Clark Kent","alias":"Superman","city":"Metropolis","team":"Justice League"},
+  {"id":4,"name":"Peter Parker","alias":"Spider-Man","city":"New York","team":"Avengers"},
+  {"id":5,"name":"Tony Stark","alias":"Iron Man","city":"New York","team":"Avengers"},
+  {"id":6,"name":"Diana Prince","alias":"Wonder Woman","city":"Themyscira","team":"Justice League"},
+  {"id":7,"name":"Natasha Romanoff","alias":"Black Widow","city":"Moscú","team":"Avengers"},
+  {"id":8,"name":"Barry Allen","alias":"Flash","city":"Central City","team":"Justice League"},
+  {"id":9,"name":"Hal Jordan","alias":"Linterna Verde","city":"Coast City","team":"Green Lantern Corps"},
+  {"id":10,"name":"Arthur Curry","alias":"Aquaman","city":"Atlantis","team":"Justice League"},
+  {"id":11,"name":"Logan Howlett","alias":"Wolverine","city":"Alberta","team":"X-Men"},
+  {"id":12,"name":"Jean Grey","alias":"Phoenix","city":"New York","team":"X-Men"},
+  {"id":13,"name":"Scott Summers","alias":"Cyclops","city":"New York","team":"X-Men"},
+  {"id":14,"name":"Ororo Munroe","alias":"Storm","city":"Cairo","team":"X-Men"},
+  {"id":15,"name":"Charles Xavier","alias":"Professor X","city":"New York","team":"X-Men"},
+  {"id":16,"name":"Selina Kyle","alias":"Catwoman","city":"Gotham City","team":"Independiente"},
+  {"id":17,"name":"Stephen Strange","alias":"Doctor Strange","city":"New York","team":"Defenders"},
+  {"id":18,"name":"Wanda Maximoff","alias":"Scarlet Witch","city":"Sokovia","team":"Avengers"},
+  {"id":19,"name":"Victor Stone","alias":"Cyborg","city":"Detroit","team":"Justice League"},
+  {"id":20,"name":"Kara Zor-El","alias":"Supergirl","city":"National City","team":"Justice League"}
+]
