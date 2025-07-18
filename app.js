@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import heroController from './controllers/heroController.js'
 import petController from './controllers/petController.js'
 import activityController from './controllers/activityController.js'
@@ -7,6 +8,8 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 
 const app = express()
+
+app.use(cors());
 
 const swaggerOptions = {
   definition: {
@@ -71,7 +74,7 @@ app.use('/api', petController)
 app.use('/api', activityController)
 app.use('/api', authController)
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, _ => {
     console.log(`Servidor corriendo en el puerto ${PORT}`)
 })
