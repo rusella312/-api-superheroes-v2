@@ -1,40 +1,84 @@
-import fs from 'fs-extra';
+import { ObjectId } from 'mongodb';
 import Pet from '../models/petModel.js';
-
-const filePath = './pets.json';
+import connectDB from '../db.js';
 
 async function getPets() {
-    try {
-        const data = await fs.readJson(filePath);
-        return data.map(pet => {
-            return new Pet(
-                pet.id,
-                pet.name,
-                pet.type,
-                pet.superPower,
-                pet.ownerId,
-                pet.felicidad !== undefined ? pet.felicidad : 50,
-                pet.hambre !== undefined ? pet.hambre : 50,
-                pet.energia !== undefined ? pet.energia : 50,
-                pet.limpieza !== undefined ? pet.limpieza : 50,
-                pet.salud !== undefined ? pet.salud : "sano",
-                pet.actividades !== undefined ? pet.actividades : []
-            );
-        });
-    } catch (error) {
-        return [];
-    }
+    const db = await connectDB();
+    const petsData = await db.collection('pets').find().toArray();
+    return petsData.map(pet => new Pet(
+        pet.id,
+        pet.name,
+        pet.type,
+        pet.superPower,
+        pet.ownerId,
+        pet.felicidad !== undefined ? pet.felicidad : 50,
+        pet.hambre !== undefined ? pet.hambre : 50,
+        pet.energia !== undefined ? pet.energia : 50,
+        pet.limpieza !== undefined ? pet.limpieza : 50,
+        pet.salud !== undefined ? pet.salud : "sano",
+        pet.actividades !== undefined ? pet.actividades : []
+    ));
 }
 
-async function savePets(pets) {
-    try {
-        await fs.writeJson(filePath, pets);
-    } catch (error) {
-        console.error(error);
-    }
+async function insertPet(pet) {
+    const db = await connectDB();
+    const lastPet = await db.collection('pets').find().sort({ id: -1 }).limit(1).toArray();
+    const newId = lastPet.length > 0 ? lastPet[0].id + 1 : 1;
+    const newPet = { ...pet, id: newId, ownerId: null };
+    await db.collection('pets').insertOne(newPet);
+    return newPet;
+}
+
+async function updatePetOwner(petId, ownerId) {
+    const db = await connectDB();
+    const result = await db.collection('pets').findOneAndUpdate(
+        { id: parseInt(petId) },
+        { $set: { ownerId: ownerId } },
+        { returnDocument: 'after' }
+    );
+    return result;
+}
+
+async function getPetById(petId) {
+    const db = await connectDB();
+    const pet = await db.collection('pets').findOne({ id: parseInt(petId) });
+    return pet;
+}
+
+// --- Actividades ---
+async function updatePetActivity(petId, updateFields, actividad) {
+    const db = await connectDB();
+    console.log("Buscando mascota con id:", petId, "parseInt:", parseInt(petId));
+    const result = await db.collection('pets').findOneAndUpdate(
+        { id: parseInt(petId) },
+        {
+            $set: updateFields,
+            $push: { actividades: actividad }
+        },
+        { returnDocument: 'after' }
+    );
+    console.log("Resultado de findOneAndUpdate:", result);
+    return result;
+}
+
+async function setPetSick(petId, actividad) {
+    const db = await connectDB();
+    const result = await db.collection('pets').findOneAndUpdate(
+        { id: parseInt(petId) },
+        {
+            $set: { salud: "enfermo" },
+            $push: { actividades: actividad }
+        },
+        { returnDocument: 'after' }
+    );
+    return result;
 }
 
 export default {
     getPets,
-    savePets
+    insertPet,
+    updatePetOwner,
+    getPetById,
+    updatePetActivity,
+    setPetSick
 }; 

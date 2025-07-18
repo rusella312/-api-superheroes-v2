@@ -1,6 +1,7 @@
 import express from "express";
 import petService from "../services/petService.js";
 import Pet from "../models/petModel.js";
+import auth from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -84,9 +85,9 @@ router.post("/pets", async (req, res) => {
  *       400:
  *         description: Mascota no encontrada o ya adoptada
  */
-router.post("/pets/:id/adopt", async (req, res) => {
+router.post("/pets/:id/adopt", auth, async (req, res) => {
     try {
-        const { ownerId } = req.body;
+        const ownerId = req.user.id;
         const adoptedPet = await petService.adoptPet(req.params.id, ownerId);
         res.json(adoptedPet);
     } catch (error) {
@@ -114,8 +115,7 @@ router.post("/pets/:id/adopt", async (req, res) => {
  */
 router.get("/pets/:id", async (req, res) => {
     try {
-        const pets = await petService.getAllPets();
-        const pet = pets.find(p => p.id === parseInt(req.params.id));
+        const pet = await petService.getPetById(req.params.id);
         if (!pet) return res.status(404).json({ error: "Mascota no encontrada" });
         res.json(pet);
     } catch (error) {

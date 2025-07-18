@@ -1,5 +1,6 @@
 import express from "express";
-import petRepository from "../repositories/petRepository.js";
+import petService from "../services/petService.js";
+import auth from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -30,29 +31,35 @@ const router = express.Router();
  *             type: object
  *             properties:
  *               ownerId:
- *                 type: integer
+ *                 type: string
  *     responses:
  *       200:
  *         description: Mascota después de jugar
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 pet:
+ *                   $ref: '#/components/schemas/Pet'
  *       403:
  *         description: No tienes acceso a esta mascota
  *       404:
  *         description: Mascota no encontrada
  */
-router.post("/pets/:id/play", async (req, res) => {
-    const { ownerId } = req.body;
-    const pets = await petRepository.getPets();
-    const idx = pets.findIndex(p => p.id === parseInt(req.params.id));
-    if (idx === -1) return res.status(404).json({ error: "Mascota no encontrada" });
-    if (pets[idx].ownerId !== ownerId) return res.status(403).json({ error: "No tienes acceso a esta mascota" });
-    if (pets[idx].salud === "enfermo") return res.status(400).json({ error: "La mascota está enferma y no puede jugar. Debe ser curada primero.", pet: pets[idx] });
-    if (pets[idx].energia < 10) return res.status(400).json({ error: "La mascota no tiene suficiente energía para jugar" });
-    pets[idx].felicidad = Math.min(100, (pets[idx].felicidad || 0) + 10);
-    pets[idx].energia = Math.max(0, (pets[idx].energia || 0) - 10);
-    pets[idx].actividades = pets[idx].actividades || [];
-    pets[idx].actividades.push({ tipo: 'jugar', fecha: new Date().toISOString(), felicidadAumentada: 10, energiaConsumida: 10 });
-    await petRepository.savePets(pets);
-    res.json({ message: '¡Jugar con la mascota fue exitoso!', pet: pets[idx] });
+router.post("/pets/:id/play", auth, async (req, res) => {
+    try {
+        const ownerId = req.user.id;
+        const pet = await petService.playWithPet(req.params.id, ownerId);
+        if (!pet) {
+            return res.status(500).json({ error: "No se pudo actualizar la mascota" });
+        }
+        res.json({ message: '¡Jugar con la mascota fue exitoso!', pet });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
 });
 
 /**
@@ -84,19 +91,17 @@ router.post("/pets/:id/play", async (req, res) => {
  *       404:
  *         description: Mascota no encontrada
  */
-router.post("/pets/:id/sleep", async (req, res) => {
-    const { ownerId } = req.body;
-    const pets = await petRepository.getPets();
-    const idx = pets.findIndex(p => p.id === parseInt(req.params.id));
-    if (idx === -1) return res.status(404).json({ error: "Mascota no encontrada" });
-    if (pets[idx].ownerId !== ownerId) return res.status(403).json({ error: "No tienes acceso a esta mascota" });
-    if (pets[idx].salud === "enfermo") return res.status(400).json({ error: "La mascota está enferma y no puede dormir. Debe ser curada primero.", pet: pets[idx] });
-    pets[idx].energia = Math.min(100, (pets[idx].energia || 0) + 20);
-    pets[idx].hambre = Math.max(0, (pets[idx].hambre || 0) - 10);
-    pets[idx].actividades = pets[idx].actividades || [];
-    pets[idx].actividades.push({ tipo: 'dormir', fecha: new Date().toISOString(), energiaAumentada: 20, hambreReducida: 10 });
-    await petRepository.savePets(pets);
-    res.json({ message: '¡La mascota durmió y recuperó energía!', pet: pets[idx] });
+router.post("/pets/:id/sleep", auth, async (req, res) => {
+    try {
+        const ownerId = req.user.id;
+        const pet = await petService.sleepPet(req.params.id, ownerId);
+        if (!pet) {
+            return res.status(500).json({ error: "No se pudo actualizar la mascota" });
+        }
+        res.json({ message: '¡La mascota durmió y recuperó energía!', pet });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
 });
 
 /**
@@ -130,26 +135,17 @@ router.post("/pets/:id/sleep", async (req, res) => {
  *       404:
  *         description: Mascota no encontrada
  */
-router.post("/pets/:id/feed", async (req, res) => {
-    const { ownerId } = req.body;
-    const pets = await petRepository.getPets();
-    const idx = pets.findIndex(p => p.id === parseInt(req.params.id));
-    if (idx === -1) return res.status(404).json({ error: "Mascota no encontrada" });
-    if (pets[idx].ownerId !== ownerId) return res.status(403).json({ error: "No tienes acceso a esta mascota" });
-    if (pets[idx].salud === "enfermo") return res.status(400).json({ error: "La mascota está enferma y no puede ser alimentada. Debe ser curada primero.", pet: pets[idx] });
-    if (pets[idx].hambre === 0 && pets[idx].salud === "sano") {
-        pets[idx].salud = "enfermo";
-        pets[idx].actividades = pets[idx].actividades || [];
-        pets[idx].actividades.push({ tipo: 'alimentar', fecha: new Date().toISOString(), resultado: 'enfermo por hambre en 0' });
-        await petRepository.savePets(pets);
-        return res.status(400).json({ error: 'La mascota está enferma porque el hambre es 0', pet: pets[idx] });
+router.post("/pets/:id/feed", auth, async (req, res) => {
+    try {
+        const ownerId = req.user.id;
+        const pet = await petService.feedPet(req.params.id, ownerId);
+        if (!pet) {
+            return res.status(500).json({ error: "No se pudo actualizar la mascota" });
+        }
+        res.json({ message: '¡La mascota fue alimentada con éxito!', pet });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
-    pets[idx].felicidad = Math.min(100, (pets[idx].felicidad || 0) + 10);
-    pets[idx].hambre = Math.max(0, (pets[idx].hambre || 0) - 10);
-    pets[idx].actividades = pets[idx].actividades || [];
-    pets[idx].actividades.push({ tipo: 'alimentar', fecha: new Date().toISOString(), felicidadAumentada: 10, hambreReducida: 10 });
-    await petRepository.savePets(pets);
-    res.json({ message: '¡La mascota fue alimentada con éxito!', pet: pets[idx] });
 });
 
 /**
@@ -181,21 +177,17 @@ router.post("/pets/:id/feed", async (req, res) => {
  *       404:
  *         description: Mascota no encontrada
  */
-router.post("/pets/:id/cure", async (req, res) => {
-    const { ownerId } = req.body;
-    const pets = await petRepository.getPets();
-    const idx = pets.findIndex(p => p.id === parseInt(req.params.id));
-    if (idx === -1) return res.status(404).json({ error: "Mascota no encontrada" });
-    if (pets[idx].ownerId !== ownerId) return res.status(403).json({ error: "No tienes acceso a esta mascota" });
-    if (pets[idx].salud === "enfermo") {
-        pets[idx].salud = "sano";
-        pets[idx].hambre = 50;
-        pets[idx].energia = 50;
-        pets[idx].actividades = pets[idx].actividades || [];
-        pets[idx].actividades.push({ tipo: 'curar', fecha: new Date().toISOString(), resultado: 'curada' });
+router.post("/pets/:id/cure", auth, async (req, res) => {
+    try {
+        const ownerId = req.user.id;
+        const pet = await petService.curePet(req.params.id, ownerId);
+        if (!pet) {
+            return res.status(500).json({ error: "No se pudo actualizar la mascota" });
+        }
+        res.json({ message: 'La mascota fue curada y restaurada a su estado sano.', pet });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
-    await petRepository.savePets(pets);
-    res.json({ message: 'La mascota fue curada y restaurada a su estado sano.', pet: pets[idx] });
 });
 
 export default router; 
