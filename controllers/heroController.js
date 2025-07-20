@@ -51,6 +51,9 @@ router.get("/heroes", async (req, res) => {
  *                 type: string
  *               team:
  *                 type: string
+ *               ownerId:
+ *                 type: string
+ *                 description: ID del dueño del héroe (opcional)
  *     responses:
  *       201:
  *         description: Héroe creado
@@ -67,8 +70,10 @@ router.post("/heroes",
         }
 
         try {
-            const { name, alias, city, team } = req.body;
-            const newHero = new Hero(null, name, alias, city, team);
+            // Recibe todos los campos, incluyendo ownerId si lo mandan
+            const { name, alias, city, team, ownerId } = req.body;
+            const newHero = { name, alias, city, team };
+            if (ownerId) newHero.ownerId = ownerId;
             const addedHero = await heroService.addHero(newHero);
 
             res.status(201).json(addedHero);

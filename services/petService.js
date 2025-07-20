@@ -50,6 +50,14 @@ async function getPetById(petId) {
     return pet;
 }
 
+async function getAvailablePets() {
+    return await petRepository.getAvailablePets();
+}
+
+async function getPetsByOwner(ownerId) {
+    return await petRepository.getPetsByOwner(ownerId);
+}
+
 // --- Actividades ---
 async function playWithPet(petId, ownerId) {
     const pet = await petRepository.getPetById(petId);
@@ -109,5 +117,7 @@ export default {
     playWithPet,
     feedPet,
     sleepPet,
-    curePet
+    curePet,
+    getAvailablePets,
+    getPetsByOwner
 }; 

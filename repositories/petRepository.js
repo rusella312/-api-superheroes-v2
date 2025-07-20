@@ -45,6 +45,23 @@ async function getPetById(petId) {
     return pet;
 }
 
+async function getAvailablePets() {
+    const db = await connectDB();
+    // Mascotas sin dueño (ownerId null o no existe)
+    return await db.collection('pets').find({ $or: [ { ownerId: null }, { ownerId: { $exists: false } } ] }).toArray();
+}
+
+async function getPetsByOwner(ownerId) {
+    const db = await connectDB();
+    // Busca tanto por ObjectId como por string
+    return await db.collection('pets').find({
+        $or: [
+            { ownerId: new ObjectId(ownerId) },
+            { ownerId: ownerId }
+        ]
+    }).toArray();
+}
+
 // --- Actividades ---
 async function updatePetActivity(petId, updateFields, actividad) {
     const db = await connectDB();
@@ -80,5 +97,7 @@ export default {
     updatePetOwner,
     getPetById,
     updatePetActivity,
-    setPetSick
+    setPetSick,
+    getAvailablePets,
+    getPetsByOwner
 }; 
