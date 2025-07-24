@@ -107,11 +107,21 @@ router.post("/heroes",
  *         description: Héroe no encontrado
  */
 router.put("/heroes/:id", async (req, res) => {
+    const id = Number(req.params.id);
+    if (isNaN(id)) {
+        return res.status(400).json({ error: "ID inválido" });
+    }
+
+    // Opcional: aquí puedes validar req.body si lo deseas
+
     try {
-        const updatedHero = await heroService.updateHero(req.params.id, req.body);
+        const updatedHero = await heroService.updateHero(id, req.body);
+        if (!updatedHero) {
+            return res.status(404).json({ error: "Héroe no encontrado" });
+        }
         res.json(updatedHero);
     } catch (error) {
-        res.status(404).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
 });
 

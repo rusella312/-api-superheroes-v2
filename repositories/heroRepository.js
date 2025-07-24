@@ -18,12 +18,62 @@ async function insertHero(hero) {
 
 async function updateHero(id, updatedHero) {
     const db = await connectDB();
+    const filter = { id: Number(id) };
     const result = await db.collection('superheroes').findOneAndUpdate(
-        { id: parseInt(id) },
+        filter,
+        { $set: updatedHero },
+        { returnDocument: 'after', returnOriginal: false }
+    );
+    if (result.value) {
+        return result.value;
+    } else {
+        // Buscar el héroe actualizado manualmente
+        return await db.collection('superheroes').findOne(filter);
+    }
+}
+
+async function updateHeroByOwnerId(ownerId, updatedHero) {
+    const db = await connectDB();
+    console.log('ownerId recibido:', ownerId);
+    // Buscar por ownerId string
+    let filter = { ownerId: ownerId };
+    let result = await db.collection('superheroes').findOneAndUpdate(
+        filter,
         { $set: updatedHero },
         { returnDocument: 'after' }
     );
-    return result.value;
+    if (result && result.value) {
+        console.log('Encontrado por ownerId string:', result.value);
+        return result.value;
+    }
+    // Buscar por ownerId como ObjectId
+    try {
+        filter = { ownerId: new ObjectId(ownerId) };
+        result = await db.collection('superheroes').findOneAndUpdate(
+            filter,
+            { $set: updatedHero },
+            { returnDocument: 'after' }
+        );
+        if (result && result.value) {
+            console.log('Encontrado por ownerId ObjectId:', result.value);
+            return result.value;
+        }
+    } catch (e) {}
+    // Buscar por _id como ObjectId
+    try {
+        filter = { _id: new ObjectId(ownerId) };
+        result = await db.collection('superheroes').findOneAndUpdate(
+            filter,
+            { $set: updatedHero },
+            { returnDocument: 'after' }
+        );
+        if (result && result.value) {
+            console.log('Encontrado por _id ObjectId:', result.value);
+            return result.value;
+        }
+    } catch (e) {}
+    console.log('No se encontró ningún héroe con ese ownerId o _id');
+    return null;
 }
 
 async function deleteHero(id) {
@@ -39,5 +89,6 @@ export default {
     getHeroes,
     insertHero,
     updateHero,
-    deleteHero
+    deleteHero,
+    updateHeroByOwnerId
 };

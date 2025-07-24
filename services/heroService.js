@@ -19,9 +19,14 @@ async function deleteHero(id) {
     return await heroRepository.deleteHero(id);
 }
 
+async function updateHeroByOwnerId(ownerId, updatedHero) {
+    return await heroRepository.updateHeroByOwnerId(ownerId, updatedHero);
+}
+
 export default {
     getAllHeroes,
     addHero,
     updateHero,
-    deleteHero
+    deleteHero,
+    updateHeroByOwnerId
 };
