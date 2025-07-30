@@ -1,0 +1,36 @@
+{
+  "projectType": "api",
+  "framework": "express",
+  "language": "javascript",
+  "description": "API REST para un juego de superhéroes que pueden adoptar y cuidar mascotas",
+  "features": [
+    "authentication",
+    "crud_operations",
+    "database_integration",
+    "game_mechanics"
+  ],
+  "endpoints": {
+    "auth": ["POST /api/login"],
+    "heroes": [
+      "GET /api/heroes",
+      "POST /api/heroes", 
+      "PUT /api/heroes/{id}",
+      "DELETE /api/heroes/{id}"
+    ],
+    "pets": [
+      "GET /api/pets",
+      "POST /api/pets",
+      "POST /api/pets/{id}/adopt",
+      "GET /api/pets/{id}",
+      "DELETE /api/pets/{id}"
+    ],
+    "activities": [
+      "POST /api/pets/{id}/play",
+      "POST /api/pets/{id}/feed", 
+      "POST /api/pets/{id}/sleep",
+      "POST /api/pets/{id}/cure"
+    ]
+  },
+  "database": "mongodb",
+  "authentication": "jwt"
+} 

@@ -1,0 +1,126 @@
+{
+  "auth": [
+    {
+      "method": "POST",
+      "endpoint": "/api/login",
+      "body": {
+        "name": { "type": "string", "required": true },
+        "password": { "type": "string", "required": true }
+      }
+    }
+  ],
+  "heroes": [
+    {
+      "method": "GET",
+      "endpoint": "/api/heroes",
+      "body": null
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/heroes",
+      "body": {
+        "name": { "type": "string", "required": true },
+        "alias": { "type": "string", "required": true },
+        "city": { "type": "string", "required": false },
+        "team": { "type": "string", "required": false },
+        "ownerId": { "type": "string", "required": false }
+      }
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/heroes/{id}",
+      "body": {
+        "name": { "type": "string", "required": false },
+        "alias": { "type": "string", "required": false },
+        "city": { "type": "string", "required": false },
+        "team": { "type": "string", "required": false },
+        "ownerId": { "type": "string", "required": false }
+      }
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/heroes/{id}",
+      "body": null
+    }
+  ],
+  "pets": [
+    {
+      "method": "GET",
+      "endpoint": "/api/pets",
+      "body": null
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/pets",
+      "body": {
+        "name": { "type": "string", "required": true },
+        "type": { "type": "string", "required": true },
+        "superPower": { "type": "string", "required": true }
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/pets/{id}/adopt",
+      "body": {
+        "ownerId": { "type": "string", "required": true, "notes": "Se toma del usuario autenticado" }
+      },
+      "auth_required": true
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/pets/{id}",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/pets/by-owner/{name}",
+      "body": null
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/pets/{id}/items",
+      "body": {
+        "name": { "type": "string", "required": true }
+      }
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/pets/{id}",
+      "body": null
+    }
+  ],
+  "pet_activities": [
+    {
+      "method": "POST",
+      "endpoint": "/api/pets/{id}/play",
+      "body": {
+        "ownerId": { "type": "string", "required": true, "notes": "Se toma del usuario autenticado" }
+      },
+      "auth_required": true
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/pets/{id}/sleep",
+      "body": {
+        "ownerId": { "type": "string", "required": true, "notes": "Se toma del usuario autenticado" }
+      },
+      "auth_required": true
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/pets/{id}/feed",
+      "body": {
+        "ownerId": { "type": "string", "required": true, "notes": "Se toma del usuario autenticado" }
+      },
+      "auth_required": true
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/pets/{id}/cure",
+      "body": {
+        "ownerId": { "type": "string", "required": true, "notes": "Se toma del usuario autenticado" }
+      },
+      "auth_required": true
+    }
+  ]
+} 
