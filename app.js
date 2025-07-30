@@ -11,6 +11,11 @@ const app = express()
 app.use(cors());
 app.use(express.json())
 
+// URL del servidor dinámica
+const serverUrl = process.env.NODE_ENV === 'production' 
+  ? 'https://api-superheroes-v2-1.onrender.com'
+  : 'http://localhost:3001';
+
 // Documentación completa de la API
 const apiDocs = {
   openapi: '3.0.0',
@@ -21,8 +26,8 @@ const apiDocs = {
   },
   servers: [
     {
-      url: 'http://localhost:3001',
-      description: 'Servidor de desarrollo'
+      url: serverUrl,
+      description: process.env.NODE_ENV === 'production' ? 'Servidor de producción' : 'Servidor de desarrollo'
     }
   ],
   components: {
@@ -414,5 +419,5 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 3001
 app.listen(PORT, _ => {
     console.log(`Servidor corriendo en el puerto ${PORT}`)
-    console.log(`Documentación Swagger disponible en: http://localhost:${PORT}/api-docs`)
+    console.log(`Documentación Swagger disponible en: ${serverUrl}/api-docs`)
 })
